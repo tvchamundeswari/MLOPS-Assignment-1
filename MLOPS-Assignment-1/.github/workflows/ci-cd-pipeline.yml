@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feature-ci-cd
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install flake8
+
+      - name: Run Linting
+        run: flake8 src/
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Tests
+        run: pytest tests/
